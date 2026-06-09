@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+@theme {
+  --color-rdr-red: #711010; /* Deep, weathered red */
+  --color-rdr-paper: #e6e0d4; /* Aged, off-white parchment */
+  --color-rdr-brown: #4a3a2e; /* Worn leather brown */
+  --color-rdr-dark: #1a1818; /* Dark earth/charcoal grey */
+  --color-rdr-highlight: #c29d6d; /* Subtle brass/gold */
+
+  --font-rdr-title: "Georgia", serif; /* Wanted poster look */
+  --font-rdr-body: system-ui, sans-serif;
+}
+
+/* Set the entire app to our dark western theme */
+body {
+  background-color: var(--color-rdr-dark);
+  color: var(--color-rdr-paper);
+  font-family: var(--font-rdr-body);
+  margin: 0;
+  min-height: 100vh;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-rdr-title);
+  color: var(--color-rdr-red);
+}
