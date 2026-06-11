@@ -44,11 +44,11 @@ class SpotifyAuthController extends Controller
             session(['spotify_token' => $spotifyUser->token]);
 
             // Redirect to a placeholder dashboard page (we will build this UI next)
-            return response()->json([
-                'message' => 'Successfully logged in with Spotify!',
-                'user' => $user,
-                'token' => session('spotify_token')
-            ]);
+            // Grab the token from the Spotify user object
+        $token = $spotifyUser->token;
+
+        // Redirect back to our React frontend and attach the token to the URL!
+        return redirect('http://localhost:5173/?token=' . $token);
 
         } catch (\Exception $e) {
             return response()->json(['error' => 'Authentication failed: ' . $e->getMessage()], 500);
