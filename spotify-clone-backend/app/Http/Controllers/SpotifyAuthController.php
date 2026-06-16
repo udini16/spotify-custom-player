@@ -17,16 +17,16 @@ class SpotifyAuthController extends Controller
      */
     public function redirect()
     {
-        // We request specific scopes so we can stream music and view playlists
         return Socialite::driver('spotify')
             ->scopes([
                 'streaming', 
                 'user-read-email', 
                 'user-read-private', 
                 'user-modify-playback-state',
-                'playlist-read-private',       // NEW: Allows us to see your private playlists
-                'playlist-read-collaborative'  // NEW: Allows us to see shared playlists
+                'playlist-read-private',
+                'playlist-read-collaborative'
             ])
+            ->with(['show_dialog' => 'true']) // <-- ADDED QUOTES HERE
             ->redirect();
     }
 
