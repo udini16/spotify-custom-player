@@ -24,9 +24,10 @@ class SpotifyAuthController extends Controller
                 'user-read-private', 
                 'user-modify-playback-state',
                 'playlist-read-private',
-                'playlist-read-collaborative'
+                'playlist-read-collaborative',
+                'user-read-currently-playing' // <-- ADD THIS NEW PERMISSION
             ])
-            ->with(['show_dialog' => 'true']) // <-- ADDED QUOTES HERE
+            ->with(['show_dialog' => 'true'])
             ->redirect();
     }
 

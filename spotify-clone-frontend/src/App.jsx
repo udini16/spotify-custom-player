@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-// 1. Import your new components
 import Collection from "./Collection";
 import Tracklist from "./Tracklist";
+import NowPlaying from "./NowPlaying";
 
 // We break the URL into pieces so the security filter ignores it
 const part1 = "https://ap";
@@ -69,12 +69,11 @@ function App() {
           return;
         }
 
-        // THE FINAL KEY: Extracting the songs based exactly on your console output
         let extractedTracks = [];
         if (data.tracks && Array.isArray(data.tracks.items)) {
-          extractedTracks = data.tracks.items; // Standard Spotify format
+          extractedTracks = data.tracks.items;
         } else if (data.items && Array.isArray(data.items.items)) {
-          extractedTracks = data.items.items; // YOUR specific account format!
+          extractedTracks = data.items.items;
         }
 
         setTracks(extractedTracks);
@@ -133,7 +132,6 @@ function App() {
           </header>
 
           <main className="w-full max-w-7xl px-8 mt-12">
-            {/* 2. Pass your data into the new components! */}
             {selectedPlaylist ? (
               <Tracklist
                 selectedPlaylist={selectedPlaylist}
@@ -145,6 +143,9 @@ function App() {
               <Collection playlists={playlists} openPlaylist={openPlaylist} />
             )}
           </main>
+
+          {/* THE NOW PLAYING BAR LIVES HERE INSIDE THE DRIVER CONTROLS */}
+          <NowPlaying token={token} />
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center min-h-screen">
