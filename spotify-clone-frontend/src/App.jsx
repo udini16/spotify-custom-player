@@ -63,31 +63,54 @@ function App() {
     }
   }, [token]);
 
+  // Add this new state right under your other states at the top
+  const [playlistError, setPlaylistError] = useState(null);
+
   const openPlaylist = (playlistId, playlistName) => {
     setSelectedPlaylist(playlistName);
     setIsLoading(true);
     setTracks([]);
+    setPlaylistError(null); // Reset the error lock
 
+    // 🚨 REVERT: Back to the main playlist endpoint that actually worked for your own songs
     const fetchUrl = `${API_BASE}/playlists/${playlistId}`;
 
     fetch(fetchUrl, {
       headers: { Authorization: `Bearer ${token}` },
     })
-      .then((response) => response.json())
+      .then((response) => {
+        // Still catch the bouncer just in case!
+        if (response.status === 403) {
+          setPlaylistError(403);
+          return null; // Stop processing
+        }
+        return response.json();
+      })
       .then((data) => {
         setIsLoading(false);
-        console.log("📦 REAL PLAYLIST VAULT:", data);
+
+        // If we hit the 403, data will be null, so we safely exit
+        if (!data) return;
 
         if (data.error) {
           console.error("Spotify API Error:", data.error);
+          setPlaylistError(data.error.status);
           return;
         }
 
+        // Back to the bulletproof extraction logic for your custom account structure
         let extractedTracks = [];
         if (data.tracks && Array.isArray(data.tracks.items)) {
           extractedTracks = data.tracks.items;
         } else if (data.items && Array.isArray(data.items.items)) {
           extractedTracks = data.items.items;
+        }
+
+        // 🚨 THE GHOST DETECTOR
+        // If Spotify sends the playlist metadata but completely deletes the tracks object, force the lock
+        if (extractedTracks.length === 0 && !data.tracks) {
+          setPlaylistError(403);
+          return;
         }
 
         setTracks(extractedTracks);
@@ -101,6 +124,7 @@ function App() {
   const closePlaylist = () => {
     setSelectedPlaylist(null);
     setTracks([]);
+    setPlaylistError(null); // Reset the error
   };
 
   const handleLogin = () => {
@@ -152,6 +176,7 @@ function App() {
                 tracks={tracks}
                 isLoading={isLoading}
                 closePlaylist={closePlaylist}
+                playlistError={playlistError} // <-- ADD THIS LINE
               />
             ) : (
               <Collection playlists={playlists} openPlaylist={openPlaylist} />

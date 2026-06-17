@@ -3,6 +3,7 @@ export default function Tracklist({
   tracks,
   isLoading,
   closePlaylist,
+  playlistError,
 }) {
   return (
     <div className="w-full animate-fade-in">
@@ -26,6 +27,18 @@ export default function Tracklist({
               Cracking the vault...
             </p>
           </div>
+        ) : playlistError === 403 ? (
+          <div className="p-12 text-center flex flex-col items-center justify-center">
+            <span className="text-5xl mb-6 grayscale opacity-70">🔒</span>
+            <p className="text-2xl font-bold text-rdr-red uppercase tracking-widest">
+              Vault Locked By Spotify
+            </p>
+            <p className="text-sm mt-4 text-rdr-highlight max-w-md leading-relaxed">
+              Spotify's API policy blocks third-party apps from reading
+              playlists created by other users. Because you do not own this
+              playlist, the API refuses to hand over the tracks.
+            </p>
+          </div>
         ) : tracks.length === 0 ? (
           <div className="p-8 text-center text-rdr-highlight">
             <p className="text-xl font-bold">This vault appears to be empty.</p>
@@ -35,12 +48,9 @@ export default function Tracklist({
           </div>
         ) : (
           tracks.map((listItem, index) => {
-            // THE FINAL KEY: We check for .track, then .item (your format!), then fallback to the root object.
             const track = listItem?.track || listItem?.item || listItem;
-
             if (!track || !track.id) return null;
 
-            // Now that we have the real data, map the UI
             const trackName = track.name || "Unknown Track";
             const artistsArray = track.artists || [];
             const artistName =
