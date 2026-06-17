@@ -19,12 +19,21 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    // 1. Check if a new token just arrived in the URL
     const urlParams = new URLSearchParams(window.location.search);
-    const spotifyToken = urlParams.get("token");
+    const urlToken = urlParams.get("token");
 
-    if (spotifyToken) {
-      setToken(spotifyToken);
-      window.history.pushState({}, null, "/");
+    // 2. Check if we have an old token saved in the browser's hard drive
+    const savedToken = window.localStorage.getItem("udini_spotify_token");
+
+    if (urlToken) {
+      // We just logged in! Save it to React AND the Hard Drive
+      setToken(urlToken);
+      window.localStorage.setItem("udini_spotify_token", urlToken);
+      window.history.pushState({}, null, "/"); // Clean the URL
+    } else if (savedToken) {
+      // We refreshed the page! Pull the token from the Hard Drive
+      setToken(savedToken);
     }
   }, []);
 
@@ -35,8 +44,13 @@ function App() {
       })
         .then((response) => response.json())
         .then((data) => {
-          if (data.error) setToken(null);
-          else setUserProfile(data);
+          if (data.error) {
+            // THE FIX: Destroy the dead token from memory AND the hard drive
+            setToken(null);
+            window.localStorage.removeItem("udini_spotify_token");
+          } else {
+            setUserProfile(data);
+          }
         });
 
       fetch(`${API_BASE}/me/playlists?limit=50`, {
