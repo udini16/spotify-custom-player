@@ -151,15 +151,14 @@ function App() {
                 </h1>
               </div>
               <div className="flex items-center gap-6">
-                {/* 🚨 THE NEW NAVIGATION BUTTON */}
                 <button
                   onClick={() => {
-                    setCurrentView("weekly");
+                    setCurrentView("weekly"); // (We can leave the code logic as "weekly", just changing the visual text!)
                     closePlaylist();
                   }}
                   className="text-xs font-bold uppercase tracking-widest text-rdr-highlight hover:text-rdr-paper transition-colors"
                 >
-                  Weekly Top
+                  Monthly Top
                 </button>
 
                 {userProfile && (

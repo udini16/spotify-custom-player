@@ -2,12 +2,20 @@ import { useEffect, useState } from "react";
 
 const API_BASE = ["https://", "api.spoti", "fy.com/v1"].join("");
 
+// ⏱️ Helper function to convert milliseconds to mm:ss
+const formatDuration = (ms) => {
+  const minutes = Math.floor(ms / 60000);
+  const seconds = ((ms % 60000) / 1000).toFixed(0);
+  return seconds == 60
+    ? minutes + 1 + ":00"
+    : minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+};
+
 export default function WeeklyTracks({ token, goBack }) {
   const [tracks, setTracks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch top tracks (short_term = approx last 4 weeks)
     fetch(`${API_BASE}/me/top/tracks?time_range=short_term&limit=20`, {
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -59,6 +67,11 @@ export default function WeeklyTracks({ token, goBack }) {
             const albumName = track.album?.name || "Unknown Album";
             const albumImage = track.album?.images?.[0]?.url;
 
+            // 🚨 Grab the duration and format it
+            const duration = track.duration_ms
+              ? formatDuration(track.duration_ms)
+              : "--:--";
+
             return (
               <div
                 key={track.id || index}
@@ -84,8 +97,15 @@ export default function WeeklyTracks({ token, goBack }) {
                     </p>
                   </div>
                 </div>
-                <div className="text-rdr-highlight/60 text-sm hidden md:block max-w-[200px] lg:max-w-xs truncate font-medium">
-                  {albumName}
+
+                {/* 🚨 Updated right side to include the album name AND the duration */}
+                <div className="flex items-center gap-8">
+                  <div className="text-rdr-highlight/60 text-sm hidden md:block max-w-[200px] lg:max-w-xs truncate font-medium">
+                    {albumName}
+                  </div>
+                  <div className="text-rdr-highlight/40 text-sm font-medium w-12 text-right group-hover:text-rdr-highlight/80 transition-colors">
+                    {duration}
+                  </div>
                 </div>
               </div>
             );
