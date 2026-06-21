@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Collection from "./Collection";
 import Tracklist from "./Tracklist";
 import NowPlaying from "./NowPlaying";
+import WeeklyTracks from "./WeeklyTracks";
 
 // We break the URL into pieces so the security filter ignores it
 const part1 = "https://ap";
@@ -15,6 +16,7 @@ function App() {
   const [playlists, setPlaylists] = useState([]);
 
   const [selectedPlaylist, setSelectedPlaylist] = useState(null);
+  const [currentView, setCurrentView] = useState("collection");
   const [tracks, setTracks] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -138,45 +140,68 @@ function App() {
           <header className="w-full bg-[#161313]/90 backdrop-blur-md border-b border-[#1f1a1a] sticky top-0 z-50 flex justify-center px-8 py-4 shadow-xl">
             <div className="w-full max-w-7xl flex items-center justify-between">
               <div className="flex flex-col">
-                <h1 className="text-3xl md:text-4xl font-chinese tracking-widest text-rdr-paper uppercase cursor-default">
+                <h1
+                  onClick={() => {
+                    setCurrentView("collection");
+                    closePlaylist();
+                  }}
+                  className="text-3xl md:text-4xl font-chinese tracking-widest text-rdr-paper uppercase cursor-pointer hover:text-rdr-red transition-colors"
+                >
                   Udini<span className="text-rdr-red">Player</span>
                 </h1>
               </div>
+              <div className="flex items-center gap-6">
+                {/* 🚨 THE NEW NAVIGATION BUTTON */}
+                <button
+                  onClick={() => {
+                    setCurrentView("weekly");
+                    closePlaylist();
+                  }}
+                  className="text-xs font-bold uppercase tracking-widest text-rdr-highlight hover:text-rdr-paper transition-colors"
+                >
+                  Weekly Top
+                </button>
 
-              {userProfile && (
-                <div className="flex items-center gap-3 bg-[#121010] p-1.5 pr-5 rounded-full border border-[#2a201a] shadow-md">
-                  {userProfile.images?.[0] ? (
-                    <img
-                      src={userProfile.images[0].url}
-                      alt="Profile"
-                      className="w-9 h-9 rounded-full object-cover border border-[#2a201a]"
-                    />
-                  ) : (
-                    <div className="w-9 h-9 rounded-full bg-[#2a201a] flex items-center justify-center">
-                      <span className="text-xs text-rdr-paper/50">U</span>
+                {userProfile && (
+                  <div className="flex items-center gap-3 bg-[#121010] p-1.5 pr-5 rounded-full border border-[#2a201a] shadow-md">
+                    {userProfile.images?.[0] ? (
+                      <img
+                        src={userProfile.images[0].url}
+                        alt="Profile"
+                        className="w-9 h-9 rounded-full object-cover border border-[#2a201a]"
+                      />
+                    ) : (
+                      <div className="w-9 h-9 rounded-full bg-[#2a201a] flex items-center justify-center">
+                        <span className="text-xs text-rdr-paper/50">U</span>
+                      </div>
+                    )}
+                    <div className="flex flex-col justify-center">
+                      <span className="text-sm font-bold text-rdr-paper tracking-wide leading-tight">
+                        {userProfile.display_name}
+                      </span>
+                      <span className="text-[10px] text-rdr-highlight/70 uppercase tracking-widest leading-tight">
+                        {userProfile.product} Plan
+                      </span>
                     </div>
-                  )}
-                  <div className="flex flex-col justify-center">
-                    <span className="text-sm font-bold text-rdr-paper tracking-wide leading-tight">
-                      {userProfile.display_name}
-                    </span>
-                    <span className="text-[10px] text-rdr-highlight/70 uppercase tracking-widest leading-tight">
-                      {userProfile.product} Plan
-                    </span>
                   </div>
-                </div>
-              )}
-            </div>
+                )}
+              </div>{" "}
+            </div>{" "}
           </header>
 
           <main className="w-full max-w-7xl px-8 mt-12">
-            {selectedPlaylist ? (
+            {currentView === "weekly" ? (
+              <WeeklyTracks
+                token={token}
+                goBack={() => setCurrentView("collection")}
+              />
+            ) : selectedPlaylist ? (
               <Tracklist
                 selectedPlaylist={selectedPlaylist}
                 tracks={tracks}
                 isLoading={isLoading}
                 closePlaylist={closePlaylist}
-                playlistError={playlistError} // <-- ADD THIS LINE
+                playlistError={playlistError}
               />
             ) : (
               <Collection playlists={playlists} openPlaylist={openPlaylist} />
