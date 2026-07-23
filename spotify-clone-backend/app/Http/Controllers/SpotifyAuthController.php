@@ -61,7 +61,8 @@ class SpotifyAuthController extends Controller
         $token = $spotifyUser->token;
 
         // Redirect back to our React frontend and attach the token to the URL!
-        return redirect('http://localhost:5173/?token=' . $token);
+        // Redirect back to our React frontend and attach the token to the URL!
+        return redirect('https://spotify-custom-player-blond.vercel.app/?token=' . $token);
 
         } catch (\Exception $e) {
             return response()->json(['error' => 'Authentication failed: ' . $e->getMessage()], 500);
