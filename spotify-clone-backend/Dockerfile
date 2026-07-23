@@ -26,5 +26,11 @@ COPY . .
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Set folder permissions
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# Create an empty SQLite database file
+RUN touch /var/www/html/database/database.sqlite
+
+# Set folder permissions (Notice we added the database folder here!)
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database
+
+# Run database migrations, then start the Apache server
+CMD php artisan migrate --force && apache2-foreground
