@@ -130,7 +130,8 @@ function App() {
   };
 
   const handleLogin = () => {
-    window.location.href = "http://127.0.0.1:8000/auth/spotify";
+    window.location.href =
+      "https://udiniplayer-backend.onrender.com/auth/spotify";
   };
 
   return (
